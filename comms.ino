@@ -14,6 +14,7 @@ const char *appKey  = "50BC4179C8259B9D9B9C05FCBD80A7FD";
 char devEui[32]; // uncomment if not manual
 
 TimerMillis transmitTimer; //timer for transmission events
+int datarate_old = -1;
 
 #define PACKET_SIZE 12
 typedef struct sensorData_t{
@@ -78,10 +79,10 @@ long ttn_fair_policy(){
   }
   
   long transmit_delay = 24*3600/daily_uplinks;
-
-  LoRaWAN.setLinkCheckLimit(check_period); // number of uplinks link check is sent, 10 for experimenting
-  LoRaWAN.setLinkCheckDelay(4); // number of uplinks waiting for an answer, 2 for experimenting, 4 otherwise
-  LoRaWAN.setLinkCheckThreshold(4); // number of times link check fails to assert link failed, 1 for experimenting, 4 otherwise
+  //setting this here does not work, TODO
+  //LoRaWAN.setLinkCheckLimit(check_period); // number of uplinks link check is sent, 10 for experimenting
+  //LoRaWAN.setLinkCheckDelay(4); // number of uplinks waiting for an answer, 2 for experimenting, 4 otherwise
+  //LoRaWAN.setLinkCheckThreshold(4); // number of times link check fails to assert link failed, 1 for experimenting, 4 otherwise
     
   #ifdef debug
     serial_debug.print("TTN fair policy daily uplinks: ");
@@ -90,6 +91,9 @@ long ttn_fair_policy(){
     serial_debug.print("link check every  ");
     serial_debug.print(check_period);
     serial_debug.println(" uplinks");
+    serial_debug.print("send delay ");
+    serial_debug.print(transmit_delay);
+    serial_debug.println(" s");
   #endif
   
   return transmit_delay;
@@ -112,9 +116,10 @@ void comms_setup( void )
     LoRaWAN.setDutyCycle(false); // must be true except for development in confined environments
     LoRaWAN.setAntennaGain(0.0); // must be equal to the installed antenna
     LoRaWAN.setADR(true); // Kicks in after 64 received packets
-    //LoRaWAN.setLinkCheckLimit(5); // number of uplinks link check is sent, 5 for experimenting, 20 otherwise
-    //LoRaWAN.setLinkCheckDelay(2); // number of uplinks waiting for an answer, 2 for experimenting, 4 otherwise
-    //LoRaWAN.setLinkCheckThreshold(1); // number of times link check fails to assert link failed, 1 for experimenting, 4 otherwise
+    //below three could be set automatically, but can not be set after join apparently
+    LoRaWAN.setLinkCheckLimit(48); // number of uplinks link check is sent, 5 for experimenting, 48 otherwise
+    LoRaWAN.setLinkCheckDelay(4); // number of uplinks waiting for an answer, 2 for experimenting, 4 otherwise
+    LoRaWAN.setLinkCheckThreshold(4); // number of times link check fails to assert link failed, 1 for experimenting, 4 otherwise
     // see examples/LoRaWAN_Disconnect/LoRaWAN_Disconnect.ino
     
     LoRaWAN.onJoin(joinCallback);
@@ -132,11 +137,16 @@ void transmitCallback(void)
 }
 void comms_transmit(void)
 {
-  //configure timer
-  long send_period = ttn_fair_policy();
-  transmitTimer.start(transmitCallback, 0, send_period); // schedule a transmission
   if (!LoRaWAN.busy())
   {
+    //if datarate has changed since last check, recalcualte timings
+    if(datarate_old!=LoRaWAN.getDataRate()){
+      //configure timer
+      long send_period = ttn_fair_policy();
+      transmitTimer.stop();
+      transmitTimer.start(transmitCallback, 0, send_period*1000); // schedule a transmission
+    }
+    
     if (!LoRaWAN.linkGateways())
     {
       transmitTimer.stop();
@@ -238,6 +248,10 @@ void receiveCallback(void)
         serial_debug.print((const char*)&data[0]);
         serial_debug.println("\"");
       #endif
+      //remote trigger system reset, use with caution
+      if(LoRaWAN.remotePort()==99 & data[0]==0xab){
+        STM32L0.reset();
+        }
     }
   }
   #ifdef debug
