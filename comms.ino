@@ -28,12 +28,12 @@ typedef struct sensorData_t{
   uint16_t  vdd;
   int8_t    tc1;
   uint8_t   tc01;
-};
+}__attribute__((packed));
 
 typedef union lorawanPacket_t{
   sensorData_t sensor;
   byte bytes[sizeof(sensorData_t)];
-}__attribute__((packed));
+};
 
 lorawanPacket_t packet;
 
@@ -141,6 +141,7 @@ void comms_transmit(void)
   {
     //if datarate has changed since last check, recalcualte timings
     if(datarate_old!=LoRaWAN.getDataRate()){
+      datarate_old=LoRaWAN.getDataRate();
       //configure timer
       long send_period = ttn_fair_policy();
       transmitTimer.stop();
@@ -179,7 +180,7 @@ void comms_transmit(void)
       //read sensors and then send data
       read_sensors();
       // int sendPacket(uint8_t port, const uint8_t *buffer, size_t size, bool confirmed = false);
-      LoRaWAN.sendPacket(2, packet.bytes, sizeof(sensorData_t), false);
+      LoRaWAN.sendPacket(2, &packet.bytes[0], sizeof(sensorData_t), false);
     }
   }
 }
@@ -249,7 +250,7 @@ void receiveCallback(void)
         serial_debug.println("\"");
       #endif
       //remote trigger system reset, use with caution
-      if(LoRaWAN.remotePort()==99 & data[0]==0xab){
+      if((LoRaWAN.remotePort()==99) & (data[0]==0xab)){
         STM32L0.reset();
         }
     }

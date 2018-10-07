@@ -67,33 +67,50 @@ void read_sensors( void )
     hdc2080.read();
     float hdc2080_temp = hdc2080.getTemp();
     float hdc2080_hum = hdc2080.getHum();
+
+    packet.sensor.stat=   0x01;
+    packet.sensor.t1  =   (int8_t)hdc2080_temp;
+    packet.sensor.t01 =   (uint8_t)((hdc2080_temp-packet.sensor.t1)*100);
+    packet.sensor.h1 =    (int8_t)hdc2080_hum;
+    packet.sensor.h01 =   (uint8_t)((hdc2080_hum-packet.sensor.h1)*100);
+    packet.sensor.ap =    (uint16_t)dsp310_pres;
+    packet.sensor.acc=    (int8_t)(lis_movement/1000);//ACC
+    packet.sensor.vdd =   (uint16_t)(stm32l0_vdd*100);
+    packet.sensor.tc1 =   (int8_t)stm32l0_temp;
+    packet.sensor.tc01 =  (uint8_t)((stm32l0_temp-packet.sensor.tc1)*100);
     
     #ifdef debug
-      /*serial_debug.println(""); 
-      serial_debug.print("stm32l0_vdd: "); 
-      serial_debug.println(stm32l0_vdd); 
-      serial_debug.print("stm32l0_temp: "); 
-      serial_debug.println(stm32l0_temp);
-      serial_debug.print("lis_movement: "); 
-      serial_debug.println(lis_movement);  
-      serial_debug.print("dsp310_temp: "); 
-      serial_debug.println(dsp310_temp);
-      serial_debug.print("dsp310_pres: "); 
-      serial_debug.println(dsp310_pres); 
-      serial_debug.print("hdc2080_temp: "); 
-      serial_debug.println(hdc2080_temp);
-      serial_debug.print("hdc2080_hum: "); 
-      serial_debug.println(hdc2080_hum);  */
+      serial_debug.println(""); 
+
+      serial_debug.print("hdc2080_temp: "); serial_debug.print(hdc2080_temp);
+      serial_debug.print(" 0x"); serial_debug.print(packet.sensor.t1,HEX); serial_debug.print(" 0x"); serial_debug.println((uint8_t)((hdc2080_temp-packet.sensor.t1)*100),HEX);
+       
+      serial_debug.print("hdc2080_hum: "); serial_debug.print(hdc2080_hum);
+      serial_debug.print(" 0x"); serial_debug.print((int8_t)hdc2080_hum,HEX); serial_debug.print(" 0x"); serial_debug.println((uint8_t)((hdc2080_hum-packet.sensor.h1)*100),HEX);
+
+      serial_debug.print("dsp310_pres: "); serial_debug.print(dsp310_pres);
+      serial_debug.print(" 0x"); serial_debug.println(dsp310_pres,HEX);
+
+      serial_debug.print("lis_movement: "); serial_debug.print(lis_movement);
+      serial_debug.print(" 0x"); serial_debug.println((int8_t)(lis_movement/1000),HEX);
+      
+      serial_debug.print("stm32l0_vdd: "); serial_debug.print(stm32l0_vdd);
+      serial_debug.print(" 0x"); serial_debug.println((uint16_t)(stm32l0_vdd*100),HEX);
+        
+      serial_debug.print("stm32l0_temp: "); serial_debug.print(stm32l0_temp);
+      serial_debug.print(" 0x"); serial_debug.print((int8_t)stm32l0_temp,HEX);serial_debug.print(" 0x"); serial_debug.println((uint8_t)((stm32l0_temp-packet.sensor.tc1)*100),HEX);
+               
+      serial_debug.print("dsp310_temp: "); serial_debug.println(dsp310_temp);
+      
+      serial_debug.print("dsp310_pres: "); serial_debug.println(dsp310_pres); 
+
+      serial_debug.print("packet.bytes[");
+      serial_debug.print(sizeof(sensorData_t));
+      serial_debug.print("] ");
+      for(int i = 0; i < sizeof(sensorData_t); i++){
+        serial_debug.print(" 0x");
+        serial_debug.print(packet.bytes[i],HEX);
+      }
+      serial_debug.println(""); 
     #endif  
-    
-    packet.sensor.stat=0x01;
-    packet.sensor.t1 = (int8_t)hdc2080_temp;
-    packet.sensor.t01 = (hdc2080_temp-packet.sensor.t1)*100;
-    packet.sensor.h1 = (int8_t)hdc2080_hum;
-    packet.sensor.h01 = (hdc2080_hum-packet.sensor.h1)*100;
-    packet.sensor.ap = (uint16_t)dsp310_pres;
-    packet.sensor.acc=(int8_t)lis_movement/1000;//ACC
-    packet.sensor.vdd = stm32l0_vdd*100;
-    packet.sensor.tc1 = (int8_t)stm32l0_temp;
-    packet.sensor.tc01 = (stm32l0_temp-packet.sensor.tc1)*100;
 }
