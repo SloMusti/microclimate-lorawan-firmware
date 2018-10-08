@@ -5,12 +5,12 @@ function Decoder(bytes) {
   var T01 = bytes[2];
   var H1 = bytes[3];
   var H01 = bytes[4];
-  var AP1 = (bytes[5] << 8) | bytes[6];
+  var AP1 = (bytes[6] << 8) | bytes[5];
   var ACC1 = bytes[7];
-  var VBAT = (bytes[8] << 8) | bytes[9];;
+  var VBAT = (bytes[9] << 8) | bytes[8];
   var TC1 = bytes[10];
   var TC01 = bytes[11];
-  
+
   return {
     Temperature: T1 + T01 / 100.0,
     Humidity: H1 + H01 / 100.0,

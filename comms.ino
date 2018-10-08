@@ -8,7 +8,8 @@
 // At most 10 downlink messages per day, including the ACKs for confirmed uplinks.
 
 // Configure the keys here, node the DevEUI is acquired from the module, but you can manually override
-const char *appEui  = "70B3D57ED0010F91";
+//const char *appEui  = "70B3D57ED0010F91";
+const char *appEui  = "70B3D57ED00130EF";
 const char *appKey  = "50BC4179C8259B9D9B9C05FCBD80A7FD";
 //const char *devEui  = "enter here"; //uncomment if manual
 char devEui[32]; // uncomment if not manual
@@ -23,9 +24,9 @@ typedef struct sensorData_t{
   uint8_t   t01;
   int8_t    h1;
   uint8_t   h01;
-  uint16_t  ap;
+  uint16_t  ap; //sth wrong with this
   int8_t    acc;
-  uint16_t  vdd;
+  uint16_t  vdd; //sth wrong with this
   int8_t    tc1;
   uint8_t   tc01;
 }__attribute__((packed));
