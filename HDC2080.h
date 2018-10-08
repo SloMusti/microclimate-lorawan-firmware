@@ -1,6 +1,9 @@
 #include <Arduino.h>
 #include "Wire.h"
 
+#define debug
+#define serial_debug  Serial1
+
 #define ADDR 0x40
 
 class HDC2080{

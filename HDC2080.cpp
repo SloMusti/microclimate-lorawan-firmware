@@ -5,6 +5,10 @@ HDC2080::HDC2080(){
 
 void HDC2080::begin(){
 
+  #ifdef debug
+    serial_debug.println("HDC2080::begin()");
+  #endif
+
 	temperatureRaw=0;
 	humidityRaw=0;
 	//config the temp sensor to read temp then humidity in one transaction

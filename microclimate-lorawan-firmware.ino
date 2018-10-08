@@ -8,7 +8,8 @@
  *  Sleep mode (about 500uA)
  *  
  *  TODO:
- *  Properly implement sensors for low-power operation
+ *  Properly implement sensors for low-power operation, currently about 6uA
+ *  Note HW modifications are required for power optimization.
  *  Cover corner-case of Join failures etc...
  *  
  *    
@@ -46,9 +47,9 @@ void setup( void )
     #ifdef debug
       serial_debug.begin(115200);
     #endif
-
-    sensors_setup();
     comms_setup();
+    sensors_setup();
+    
 }
 void loop( void )
 {
