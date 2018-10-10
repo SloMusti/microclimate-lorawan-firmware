@@ -8,8 +8,7 @@
 // At most 10 downlink messages per day, including the ACKs for confirmed uplinks.
 
 // Configure the keys here, node the DevEUI is acquired from the module, but you can manually override
-//const char *appEui  = "70B3D57ED0010F91";
-const char *appEui  = "70B3D57ED00130EF";
+const char *appEui  = "70B3D57ED0010F91";
 const char *appKey  = "50BC4179C8259B9D9B9C05FCBD80A7FD";
 //const char *devEui  = "enter here"; //uncomment if manual
 char devEui[32]; // uncomment if not manual
@@ -70,20 +69,8 @@ long ttn_fair_policy(){
     default:
       daily_uplinks = 2880;//every 30s
   }
-  int check_period = daily_uplinks/10 ; //in number of uplinks, 10 downlinks daliy limit
 
-  //testing only, force quicker convergence to final datarate
-  //check if more then 100 packets have been sent, ADR should have kicked in
-  if(LoRaWAN.getUpLinkCounter()<100){
-    daily_uplinks = 2880;//every 30s
-    check_period = 10; //every 10 uplinks
-  }
-  
   long transmit_delay = 24*3600/daily_uplinks;
-  //setting this here does not work, TODO
-  //LoRaWAN.setLinkCheckLimit(check_period); // number of uplinks link check is sent, 10 for experimenting
-  //LoRaWAN.setLinkCheckDelay(4); // number of uplinks waiting for an answer, 2 for experimenting, 4 otherwise
-  //LoRaWAN.setLinkCheckThreshold(4); // number of times link check fails to assert link failed, 1 for experimenting, 4 otherwise
     
   #ifdef debug
     serial_debug.print("TTN fair policy daily uplinks: ");
@@ -140,13 +127,21 @@ void comms_transmit(void)
 {
   if (!LoRaWAN.busy())
   {
-    //if datarate has changed since last check, recalcualte timings
-    if(datarate_old!=LoRaWAN.getDataRate()){
-      datarate_old=LoRaWAN.getDataRate();
-      //configure timer
-      long send_period = ttn_fair_policy();
-      transmitTimer.stop();
-      transmitTimer.start(transmitCallback, 0, send_period*1000); // schedule a transmission
+     //testing only, force quicker convergence to final datarate
+    //check if more then 100 packets have been sent, ADR should have kicked in
+    if(LoRaWAN.getUpLinkCounter()<100){
+      daily_uplinks = 2880;//every 30s
+      check_period = 10; //every 10 uplinks
+    }
+    else{
+      //if datarate has changed since last check, recalcualte timings
+      if(datarate_old!=LoRaWAN.getDataRate()){
+        datarate_old=LoRaWAN.getDataRate();
+        //configure timer
+        long send_period = ttn_fair_policy();
+        transmitTimer.stop();
+        transmitTimer.start(transmitCallback, 0, send_period*1000); // schedule a transmission
+      }
     }
     
     if (!LoRaWAN.linkGateways())
