@@ -8,8 +8,8 @@
 // At most 10 downlink messages per day, including the ACKs for confirmed uplinks.
 
 // Configure the keys here, node the DevEUI is acquired from the module, but you can manually override
-const char *appEui  = "enter here";
-const char *appKey  = "enter here";
+const char *appEui  = "70B3D57ED00130EF";
+const char *appKey  = "50BC4179C8259B9D9B9C05FCBD80A7FD";
 
 //const char *devEui  = "enter here"; //uncomment if manual
 char devEui[32]; // comment if manual
@@ -136,7 +136,7 @@ void comms_transmit(void)
         serial_debug.println("comms_transmit() scheduling send");
       #endif
     //if datarate has changed since last check and got more then 50 uplinks, this forces faster covnergence towards better datarate
-    if((datarate_old!=LoRaWAN.getDataRate())&LoRaWAN.getUpLinkCounter()>50){
+    if(((datarate_old!=LoRaWAN.getDataRate())&LoRaWAN.getUpLinkCounter()>50)| LoRaWAN.getUpLinkCounter()==50){
       #ifdef debug
       serial_debug.println("comms_transmit() datarate changed");
       #endif
