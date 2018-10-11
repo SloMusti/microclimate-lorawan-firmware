@@ -45,12 +45,7 @@ boolean LIS2DH12::begin(){
 
   Wire.beginTransmission(ADDR);
   Wire.write(LIS2DH12_CTRL_REG6);
-  Wire.write(LIS2DH12_I2IA1_EN | LIS2DH12_INT2_ACT_EN | LIS2DH12_INT_POL_ACT_LOW);
-  Wire.endTransmission();
-
-  Wire.beginTransmission(ADDR);
-  Wire.write(LIS2DH12_CTRL_REG6);
-  Wire.write(LIS2DH12_I2IA1_EN | LIS2DH12_INT2_ACT_EN | LIS2DH12_INT_POL_ACT_LOW);
+  Wire.write(LIS2DH12_I2IA1_EN | LIS2DH12_INT2_ACT_EN | LIS2DH12_INT_POL_ACT_HIGH);
   Wire.endTransmission();
 
   Wire.beginTransmission(ADDR);

@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "Wire.h"
 
-#define debug
+//#define debug
 #define serial_debug  Serial1
 
 #define ADDR 0x40

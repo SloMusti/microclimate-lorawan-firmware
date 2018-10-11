@@ -30,8 +30,8 @@ void ISR_LIS() {
 
 void sensors_setup( void )
 {
-    pinMode(LIS_INT2, INPUT_PULLDOWN);
-    attachInterrupt(digitalPinToInterrupt(LIS_INT2), ISR_LIS, RISING);
+    pinMode(LIS_INT2, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(LIS_INT2), ISR_LIS, FALLING);
 
     // Each sensor should have a check to determine if present on boot
     // Code in reading should handle if sensor becomes unavailable
@@ -85,7 +85,7 @@ void read_sensors( void )
     packet.sensor.tc01 =  (uint8_t)((stm32l0_temp-packet.sensor.tc1)*100);
     
     #ifdef debug
-      serial_debug.println(""); 
+      /*serial_debug.println(""); 
 
       serial_debug.print("hdc2080_temp: "); serial_debug.print(hdc2080_temp);
       serial_debug.print(" 0x"); serial_debug.print(packet.sensor.t1,HEX); serial_debug.print(" 0x"); serial_debug.println((uint8_t)((hdc2080_temp-packet.sensor.t1)*100),HEX);
@@ -116,6 +116,6 @@ void read_sensors( void )
         serial_debug.print(" 0x");
         serial_debug.print(packet.bytes[i],HEX);
       }
-      serial_debug.println(""); 
+      serial_debug.println(""); */
     #endif  
 }

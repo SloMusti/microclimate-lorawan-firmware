@@ -35,11 +35,18 @@
  */
 
 #include <STM32L0.h>
+#include "TimerMillis.h"
+
+TimerMillis wdtTimer; //timer for transmission events
 
 #define debug
 #define serial_debug  Serial1
 
 boolean comms_transmit_flag = false;
+
+void ISR_WDT() {
+    STM32L0.wdtReset();
+}
 
 void setup( void )
 {
@@ -49,10 +56,12 @@ void setup( void )
     #endif
     comms_setup();
     sensors_setup();
-    
+    wdtTimer.start(ISR_WDT, 0, 15*1000);
+    STM32L0.wdtEnable(18000);
 }
 void loop( void )
 {
+  STM32L0.wdtReset();
   if (comms_transmit_flag){
     //TODO: requires better handling, stay in sleep with 1s cycle until beign able to send
     comms_transmit_flag = false;
