@@ -8,8 +8,8 @@
 // At most 10 downlink messages per day, including the ACKs for confirmed uplinks.
 
 // Configure the keys here, node the DevEUI is acquired from the module, but you can manually override
-const char *appEui  = "70B3D57ED00130EF";
-const char *appKey  = "50BC4179C8259B9D9B9C05FCBD80A7FD";
+const char *appEui  = "enter here";
+const char *appKey  = "enter here";
 
 //const char *devEui  = "enter here"; //uncomment if manual
 char devEui[32]; // comment if manual
