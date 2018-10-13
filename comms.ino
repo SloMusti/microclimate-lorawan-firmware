@@ -1,6 +1,7 @@
 //handle communications
 #include "LoRaWAN.h"
 #include "TimerMillis.h"
+#include <STM32L0.h>
 
 // TTN fair usage policy guideline
 // An average of 30 seconds uplink time on air, per day, per device. 
@@ -16,6 +17,9 @@ char devEui[32]; // comment if manual
 
 TimerMillis transmitTimer; //timer for transmission events
 int datarate_old = -1;
+
+long lorawan_uplink_counter_old = 0;
+int lorawan_failed_counter = 0;
 
 #define PACKET_SIZE 12
 typedef struct sensorData_t{
@@ -134,8 +138,8 @@ void comms_transmit(void)
   {
     #ifdef debug
         serial_debug.println("comms_transmit() scheduling send");
-      #endif
-    //if datarate has changed since last check and got more then 50 uplinks, this forces faster covnergence towards better datarate
+    #endif
+    //if datarate has changed since last check and got more then 50 uplinks, this forces faster convergence towards better datarate
     if(((datarate_old!=LoRaWAN.getDataRate())&LoRaWAN.getUpLinkCounter()>50)| LoRaWAN.getUpLinkCounter()==50){
       #ifdef debug
       serial_debug.println("comms_transmit() datarate changed");
@@ -182,6 +186,35 @@ void comms_transmit(void)
       LoRaWAN.sendPacket(2, &packet.bytes[0], sizeof(sensorData_t), false);
     }
   }
+
+  //watchdog for potential deadlocks and hangs, this should really never happen
+  
+  //check if the counter has not incremented and increase the failed flag
+  if(lorawan_uplink_counter_old==LoRaWAN.getUpLinkCounter()){
+    lorawan_failed_counter++;
+  }
+  else{
+    lorawan_failed_counter=0; // reset to 0 on all successful transmissions
+  }
+  
+  //update the counter value
+  lorawan_uplink_counter_old = LoRaWAN.getUpLinkCounter();
+  
+  #ifdef debug
+        serial_debug.print("comms_transmit() lorawan_failed_counter ");
+        serial_debug.print(lorawan_failed_counter);
+  #endif
+
+  //finally issue a full system reset if 50 scheduled transmissions failed
+  //first option is a deadlock on lorawan stack, second is callting the transmitt timer more often then dutycycle allows
+  if(lorawan_failed_counter>50){
+    #ifdef debug
+        serial_debug.println("comms_transmit() lorawan_failed_counter, full reset");
+    #endif
+    // perform full system reset
+    STM32L0.reset();
+  }
+  
 }
 
 // Callback on Join failed/success
