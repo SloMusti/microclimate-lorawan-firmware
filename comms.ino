@@ -139,8 +139,8 @@ void comms_transmit(void)
     #ifdef debug
         serial_debug.println("comms_transmit() scheduling send");
     #endif
-    //if datarate has changed since last check and got more then 50 uplinks, this forces faster convergence towards better datarate
-    if(((datarate_old!=LoRaWAN.getDataRate())&LoRaWAN.getUpLinkCounter()>50)| LoRaWAN.getUpLinkCounter()==50){
+    //if datarate has changed since last check and got more then 10 uplinks, this forces faster convergence towards better datarate
+    if(((datarate_old!=LoRaWAN.getDataRate())&LoRaWAN.getUpLinkCounter()>10)| LoRaWAN.getUpLinkCounter()==10){
       #ifdef debug
       serial_debug.println("comms_transmit() datarate changed");
       #endif
