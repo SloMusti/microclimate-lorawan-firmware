@@ -14,3 +14,6 @@ All corner cases not tested for hands.
 # Requirements:
 Core: https://github.com/GrumpyOldPizza/ArduinoCore-stm32l0
 Note you need to upgrade to the latest git version as release 0.0.8 does not have all necessary fixes.
+
+# TODO:
+Evaluate OTAA join retry tiemouts and process.

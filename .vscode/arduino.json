@@ -1,0 +1,6 @@
+{
+    "sketch": "src/main.ino",
+    "board": "IRNAS:stm32l0:microclimate-L072Z",
+    "configuration": "speed=32,opt=os",
+    "port": "/dev/ttyACM0"
+}
