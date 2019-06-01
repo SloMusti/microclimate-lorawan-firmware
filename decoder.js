@@ -33,8 +33,22 @@ function Decoder(bytes) {
     // settings
     if (port === 3){
         decoded.system_status_interval = (bytes[1] << 8) | bytes[0];
-        decoded.system_functions = bytes[2];
-        decoded.lorawan_datarate_adr = bytes[3];
+
+        decoded.system_functions = {};//bytes[2];
+        decoded.system_functions.gps_periodic =  ((bytes[2] >> 0)&0x01)? 1 : 0;
+        decoded.system_functions.gps_triggered =  ((bytes[2] >> 1)&0x01)? 1 : 0;
+        decoded.system_functions.gps_hot_fix =  ((bytes[2] >> 2)&0x01)? 1 : 0;
+        decoded.system_functions.accelerometer_enabled =  ((bytes[2] >> 3)&0x01)? 1 : 0;
+        decoded.system_functions.light_enabled =  ((bytes[2] >> 4)&0x01)? 1 : 0;
+        decoded.system_functions.temperature_enabled =  ((bytes[2] >> 5)&0x01)? 1 : 0;
+        decoded.system_functions.humidity_enabled =  ((bytes[2] >> 6)&0x01)? 1 : 0;
+        decoded.system_functions.pressure_enabled =  ((bytes[2] >> 7)&0x01)? 1 : 0;
+
+        decoded.lorawan_datarate_adr = {};//bytes[3];
+        decoded.lorawan_datarate_adr.datarate = bytes[3]&0x0f;
+        decoded.lorawan_datarate_adr.confirmed_uplink =  ((bytes[3] >> 6)&0x01)? 1 : 0;
+        decoded.lorawan_datarate_adr.adr =  ((bytes[3] >> 7)&0x01)? 1 : 0;
+
         decoded.sensor_interval = (bytes[5] << 8) | bytes[4];
         decoded.gps_cold_fix_timeout = (bytes[7] << 8) | bytes[6];
         decoded.gps_hot_fix_timeout = (bytes[9] << 8) | bytes[8];

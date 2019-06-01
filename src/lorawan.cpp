@@ -3,8 +3,8 @@
 //#define debug
 //#define serial_debug  Serial
 
-//#define LORAWAN_ABP
-#define LORAWAN_OTAA
+#define LORAWAN_ABP
+//#define LORAWAN_OTAA
 
 #ifdef LORAWAN_ABP
 // LoraWAN ABP configuration
@@ -49,6 +49,7 @@ void lorawan_init(void){
     #endif
 
     #ifdef LORAWAN_ABP
+    LoRaWAN.setDataRate(5);
     LoRaWAN.joinABP(devAddr, nwkSKey, appSKey);
     #endif
 
