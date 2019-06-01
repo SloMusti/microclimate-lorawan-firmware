@@ -38,7 +38,7 @@ function Decoder(bytes) {
         decoded.sensor_interval = (bytes[5] << 8) | bytes[4];
         decoded.gps_cold_fix_timeout = (bytes[7] << 8) | bytes[6];
         decoded.gps_hot_fix_timeout = (bytes[9] << 8) | bytes[8];
-        decoded.gps_minimal_hdop = bytes[10];
+        decoded.gps_minimal_ehpe = bytes[10];
         decoded.mode_slow_voltage_threshold = bytes[11];
     }
     else if (port === 2){
